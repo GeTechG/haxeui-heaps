@@ -199,13 +199,22 @@ class TextInputImpl extends TextDisplayImpl {
         _internalEventsRegistered = true;
         textInput.onKeyDown = onKeyDownInternal;
         textInput.onKeyUp = onKeyUpInternal;
+        textInput.onSubmit = onSubmitInternal;
     }
 
     // heaps doesnt have a keypress event, so we'll hold onto down keys in order to dispatch the press event
     private var _downKeys:Map<Int, Bool> = new Map<Int, Bool>();
+
+    // Armed by onSubmitInternal (Enter already drove the submit), consumed by the next Enter/NumpadEnter key-up.
+    // The per-frame focus reconcile can re-focus this input mid-hold and route a stray real Enter key-up here
+    // AFTER onSubmit already submitted; this one-shot swallows exactly that key-up so it cannot fire a SECOND
+    // UIEvent.SUBMIT. It can never drop a genuine submit: on heaps the single-line submit always travels through
+    // onSubmitInternal (handleKey blurs on the key-down), so the real key-up path only ever produces a duplicate.
+    private var _enterSubmittedPending:Bool = false;
     private function unregisterInernalEvents() {
         textInput.onKeyDown = null;
         textInput.onKeyUp = null;
+        textInput.onSubmit = null;
         _internalEventsRegistered = false;
     }
 
@@ -217,10 +226,31 @@ class TextInputImpl extends TextDisplayImpl {
     private function onKeyUpInternal(e:Event) {
         var hadDownKey = (_downKeys.exists(e.keyCode) && _downKeys.get(e.keyCode) == true);
         _downKeys.remove(e.keyCode);
+        // Swallow the single stray Enter/NumpadEnter key-up that follows an onSubmit-driven submit, so the focus
+        // reconcile re-routing it back here cannot fire a second SUBMIT (see _enterSubmittedPending). Multiline
+        // inputs never arm the flag (handleKey inserts a newline instead of calling onSubmit), so this is a no-op
+        // for them and their Enter key-ups flow through unchanged.
+        if (_enterSubmittedPending && (e.keyCode == Key.ENTER || e.keyCode == Key.NUMPAD_ENTER)) {
+            _enterSubmittedPending = false;
+            return;
+        }
         dispatchEvent(KeyboardEvent.KEY_UP, e.keyCode);
         if (hadDownKey) {
             dispatchEvent(KeyboardEvent.KEY_PRESS, e.keyCode);
         }
+    }
+
+    // On a single-line input, h2d.TextInput commits Enter by blurring its own interactive DURING the Enter
+    // EKeyDown (handleKey: cursorIndex = -1; interactive.blur(); onSubmit()). That blur drops the heaps scene
+    // focus, so the matching Enter EKeyUp is no longer routed to this interactive and onKeyUpInternal never
+    // fires for Enter. Result: haxeui-core's TextField KEY_UP(Enter) -> UIEvent.SUBMIT never fires on heaps.
+    // heaps signals this exact "validated with Enter" moment via its native onSubmit hook, so re-emit the
+    // swallowed KEY_UP(Enter) here. This drives the STANDARD haxeui submit path (no global keyboard listener,
+    // no @:privateAccess) and works the same on every heaps target (HL + JS). handleKey fires onSubmit for both
+    // Enter and NumpadEnter, but haxeui only recognises code 13 (Platform.KeyEnter), so always emit Key.ENTER.
+    private function onSubmitInternal() {
+        _enterSubmittedPending = true; // arm: swallow the stray real Enter key-up that may be routed back later
+        dispatchEvent(KeyboardEvent.KEY_UP, Key.ENTER);
     }
 
     private function dispatchEvent(type:String, keyCode:Int) {
