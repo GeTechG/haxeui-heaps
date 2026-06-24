@@ -54,7 +54,7 @@ class TextInputImpl extends TextDisplayImpl {
 
     public override function blur() {
         unregisterFocus();
-        @:privateAccess textInput.interactive.blur();
+        textInput.blur();
     }
 
     // haxeui-core tears a component down via Component.disposeComponent() -> getTextInput().dispose() WITHOUT
