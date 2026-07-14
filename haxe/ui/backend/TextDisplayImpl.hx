@@ -124,15 +124,23 @@ class TextDisplayImpl extends TextBase {
         }
 
         sprite.y = (_top) + offset;
+
+        // Texel-snap the text sprite's local origin to integers. The baseline-centering offset applied above,
+        // (fontSize - baseLine) / 2, is a half-pixel for many bitmap fonts (e.g. a 12px font whose baseLine is 13);
+        // under the default Nearest sampling a fractional sprite origin duplicates one glyph row/column and drops
+        // another, so text renders subtly corrupted. Component positions are already integer-snapped, so rounding the
+        // local sprite origin is enough to keep the composed glyph origin texel-aligned.
+        sprite.x = Math.round(sprite.x);
+        sprite.y = Math.round(sprite.y);
     }
-    
+
     private override function validateDisplay() {
         if (autoWidth == false) {
             sprite.maxWidth = _width != 0 ? _width : _textWidth;
         }else if (sprite.textAlign == h2d.Text.Align.Right){
-            sprite.x =_width;
+            sprite.x = Math.round(_width); // texel-snap: keep the sprite origin integer under Nearest sampling
         }else if (sprite.textAlign == h2d.Text.Align.Center) {
-            sprite.x = (_left) + (_width / 2);
+            sprite.x = Math.round((_left) + (_width / 2)); // texel-snap: keep the sprite origin integer
         }
     }
     
