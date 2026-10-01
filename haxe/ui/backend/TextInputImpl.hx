@@ -118,7 +118,19 @@ class TextInputImpl extends TextDisplayImpl {
         }
     }
 
+    // A single-line input centers its line in the box it is given, as a native input does. haxeui-core places the
+    // input at paddingTop and sizes it to the field's usable height, so in a field whose fixed height is smaller
+    // than padding + line height the text would otherwise hang below the center. Floored, not rounded: the sprite
+    // origin stays an integer (texel-snap) and a box one pixel taller than the line keeps the text where it was.
+    private override function validatePosition() {
+        super.validatePosition();
+        if (!_displayData.multiline && _height > 0) {
+            sprite.y += Math.floor((_height - sprite.font.lineHeight) / 2);
+        }
+    }
+
     private override function validateDisplay() {
+        validatePosition(); // the box height arrives as a DISPLAY invalidation, and the vertical position depends on it
         super.validateDisplay();
         
         textInput.inputWidth = Math.round(textInput.maxWidth); // clip text input display to text component's width
