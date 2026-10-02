@@ -17,4 +17,6 @@ Independent fork of `haxeui/haxeui-heaps` (Heaps backend of HaxeUI). Its consume
 `openspec/` holds this fork's own specs (`openspec/specs/`). Behaviour or rule changes go through `openspec/changes/`.
 
 ## Delivery
-Work on a branch, open a PR to `master`; never push to `master` directly.
+- **One task — one branch**, cut from `master`. A branch carries one task only; a second task gets its own branch.
+- Deliver through a PR to `master`; never push to `master` directly.
+- OpenSpec artifacts (proposal, tasks, specs, archive) are infrastructure commits and never share a commit with code, so that an upstream PR stays a cherry-pick of one task's code commits.
