@@ -6,3 +6,4 @@ openspec/
 .github/infra-paths
 .github/scripts/
 .github/workflows/ci.yml
+.gitignore
