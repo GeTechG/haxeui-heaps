@@ -12,7 +12,14 @@ Independent fork of `haxeui/haxeui-heaps` (Heaps backend of HaxeUI). Its consume
 ## Checks
 - `bash .github/scripts/check-commit-kinds-test.sh` — self-test of the commit-kind check.
 - `bash .github/scripts/check-commit-kinds.sh origin/master..HEAD` — run it on your branch before pushing.
-- Build: Haxe 4.3.7 (pinned in `.github/workflows/ci.yml`), with the forks of `haxeui-core` and `heaps` as libraries; the compile command is the `build` job in that workflow. The library has no test suite of its own yet.
+- Build: `HAXE_STD_PATH=.haxe/std .haxe/haxe .serena/lsp.hxml --no-output` must exit 0 — every module of `haxe/`, typed for HashLink against the pinned libraries (see *Toolchain*). The library has no test suite of its own yet.
+
+## Toolchain
+Run `tools/setup.sh` once in every checkout or worktree, before anything else. It is the only setup step.
+- **Compiler.** Build, type and run tests only with the pinned Haxe 5: `.haxe/haxe` with `HAXE_STD_PATH=.haxe/std`. Never the system `haxe` (4.x). The pin is `tools/haxe-build.pin` — one line, `<build key> <sha256 of the archive>`, a build of `GeTechG/haxe`; changing the compiler is a one-commit change to that file.
+- **Libraries.** `tools/libs.pin` pins the sources of `haxeui-core`, `heaps`, `format` and `hlsdl` by commit. They are fetched outside the checkout; `.serena/lsp.hxml` lists their classpaths.
+- **Serena** (symbol navigation, configured in `.mcp.json` and `.codex/config.toml`) uses the language server and the display config `.serena/lsp.hxml` the script generates. Re-run the script after adding or removing source files or changing a pin, then restart Serena.
+- **Reference lists are not exhaustive.** The language server can miss call sites, and misses more when a module of `.serena/lsp.hxml` does not compile (the script fails loudly then). A lookup can also fail outright with a compiler error from library code, typically for a member with a common name (`get`, `set`). Before a rename or a removal, check against a text search (`grep -rn`).
 
 ## Specs
 `openspec/` holds this fork's own specs (`openspec/specs/`). Behaviour or rule changes go through `openspec/changes/`.

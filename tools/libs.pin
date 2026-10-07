@@ -1,0 +1,6 @@
+# Library sources the display config compiles against, fetched by tools/setup.sh.
+# name  version  commit  repository  classpath inside the repository
+haxeui-core 1.7.0 d42f42bde9dc81128fcf6ccd65b3565a324cb301 https://github.com/GeTechG/haxeui-core .
+heaps 2.1.0 9ddadedb3d6da33b7c0818ff8735625d859b34c0 https://github.com/GeTechG/heaps .
+format 3.8.0 775a06f0a7aa64cbd060b5c3ba62f65d7fed684a https://github.com/HaxeFoundation/format .
+hlsdl 1.16.0 72c52ad8aa6aa8b9a016d0321429a7b459091ea0 https://github.com/GeTechG/hashlink libs/sdl
