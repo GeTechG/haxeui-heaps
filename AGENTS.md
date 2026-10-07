@@ -12,7 +12,7 @@ Independent fork of `haxeui/haxeui-heaps` (Heaps backend of HaxeUI). Its consume
 ## Checks
 - `bash .github/scripts/check-commit-kinds-test.sh` — self-test of the commit-kind check.
 - `bash .github/scripts/check-commit-kinds.sh origin/master..HEAD` — run it on your branch before pushing.
-- Build: `HAXE_STD_PATH=.haxe/std .haxe/haxe .serena/lsp.hxml --no-output` must exit 0 — every module of `haxe/`, typed for HashLink against the pinned libraries (see *Toolchain*). The library has no test suite of its own yet.
+- Build: `HAXE_STD_PATH=.haxe/std .haxe/haxe .serena/lsp.hxml --no-output` must exit 0 (`tools/setup.sh` ends with it, and so does the `build` job of CI) — every module of `haxe/`, typed for HashLink against the pinned libraries (see *Toolchain*). The library has no test suite of its own yet.
 
 ## Toolchain
 Run `tools/setup.sh` once in every checkout or worktree, before anything else. It is the only setup step.

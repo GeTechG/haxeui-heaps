@@ -5,9 +5,6 @@ on:
     branches: [master]
   pull_request:
 
-env:
-  HAXE_VERSION: 4.3.7
-
 jobs:
   commit-kinds:
     runs-on: ubuntu-latest
@@ -32,17 +29,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: krdlab/setup-haxe@v1
-        with:
-          haxe-version: ${{ env.HAXE_VERSION }}
-      - name: Install libraries
-        run: |
-          git clone --depth=1 https://github.com/GeTechG/haxeui-core.git ../haxeui-core
-          haxelib dev haxeui-core ../haxeui-core
-          git clone --depth=1 https://github.com/GeTechG/heaps.git ../heaps
-          haxelib dev heaps ../heaps
-          haxelib dev haxeui-heaps .
-          haxelib install hlsdl --quiet
-          haxelib install format --quiet
-      - name: Compile the backend
-        run: haxe -lib haxeui-core -lib heaps -lib haxeui-heaps -lib hlsdl -hl main.hl --no-output --macro 'haxe.macro.Compiler.include("haxe.ui", ["haxe.ui.macros"])'
+      # Installs the pinned compiler and libraries, then compiles every module with them.
+      - name: Set up the toolchain and compile the backend
+        run: tools/setup.sh
