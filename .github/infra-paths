@@ -10,3 +10,4 @@ openspec/
 tools/
 .mcp.json
 .codex/
+sgconfig.yml
