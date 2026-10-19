@@ -17,7 +17,7 @@ class TextInputImpl extends TextDisplayImpl {
     }
 
     private override function createText() {
-        textInput = new TextInput(hxd.res.DefaultFont.get());
+        textInput = new TextInput(AssetsImpl.defaultFont());
         textInput.lineBreak = false;
         textInput.onChange = onChange;
         textInput.onClick = function(e) {
@@ -141,8 +141,8 @@ class TextInputImpl extends TextDisplayImpl {
         if (isBitmap) {
             temp.resizeTo(fontSizeValue);
         } else {
-            if (temp == hxd.res.DefaultFont.get()) {
-                temp = hxd.res.DefaultFont.get().clone();
+            if (temp == AssetsImpl.defaultFont()) {
+                temp = AssetsImpl.defaultFont().clone();
             }
             temp.resizeTo(fontSizeValue);
         }
