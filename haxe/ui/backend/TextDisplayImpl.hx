@@ -96,7 +96,7 @@ class TextDisplayImpl extends TextBase {
         var temp = sprite.font.clone();
         sprite.font = null;
         if (isBitmap) {
-            temp.resizeTo(-fontSizeValue);
+            temp.resizeTo(fontSizeValue);
         } else {
             if (temp == hxd.res.DefaultFont.get()) {
                 temp = hxd.res.DefaultFont.get().clone();
