@@ -40,6 +40,10 @@ class TextDisplayImpl extends TextBase {
                 _currentFontData = _fontInfo.data;
 
                 var font:Font = null;
+                #if haxeui_heaps_no_image_decode
+                font = _currentFontData.clone();
+                isBitmap = font.type == BitmapFont;
+                #else
                 var sdfDetails = SDFFonts.get(_fontInfo.name);
                 if (sdfDetails != null) {
                     font = _currentFontData.toSdfFont(defaultFontSize, sdfDetails.channel, sdfDetails.alphaCutoff, sdfDetails.smoothing).clone();
@@ -47,6 +51,7 @@ class TextDisplayImpl extends TextBase {
                     font = _currentFontData.toFont().clone();
                     isBitmap = true;
                 }
+                #end
 
                 if (sprite.font != font) {
                     sprite.font = font;
@@ -98,8 +103,8 @@ class TextDisplayImpl extends TextBase {
         if (isBitmap) {
             temp.resizeTo(fontSizeValue);
         } else {
-            if (temp == hxd.res.DefaultFont.get()) {
-                temp = hxd.res.DefaultFont.get().clone();
+            if (temp == AssetsImpl.defaultFont()) {
+                temp = AssetsImpl.defaultFont().clone();
             }
             temp.resizeTo(fontSizeValue);
         }
@@ -165,7 +170,7 @@ class TextDisplayImpl extends TextBase {
     }
 
     private function createText():h2d.Text {
-        var text = new h2d.Text(hxd.res.DefaultFont.get(), parentComponent);
+        var text = new h2d.Text(AssetsImpl.defaultFont(), parentComponent);
         text.lineBreak = false;
         return text;
     }
