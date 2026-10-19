@@ -78,8 +78,12 @@ class AssetsImpl extends AssetsBase {
         #if haxeui_heaps_no_image_decode
         if (decodeImage == null) {
             callback(null);
-        } else {
+            return;
+        }
+        try {
             decodeImage(bytes, callback);
+        } catch (e:Dynamic) {
+            callback(null);
         }
         #else
         try {
@@ -114,12 +118,19 @@ class AssetsImpl extends AssetsBase {
             callback(null);
             return;
         }
-        loadFont(resourceId, function(font) {
-            callback(font == null ? null : {
-                name: resourceId,
-                data: font
+        try {
+            loadFont(resourceId, function(font) {
+                callback(font == null ? null : {
+                    name: resourceId,
+                    data: font
+                });
             });
-        });
+        } catch (error:Dynamic) {
+            #if debug
+            trace("WARNING: problem loading font '" + resourceId + "' (" + error + ")");
+            #end
+            callback(null);
+        }
         #else
         try {
             var font = hxd.Res.loader.loadCache(resourceId, hxd.res.BitmapFont);
