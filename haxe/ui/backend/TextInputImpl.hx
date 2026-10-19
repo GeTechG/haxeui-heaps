@@ -139,7 +139,7 @@ class TextInputImpl extends TextDisplayImpl {
     private override function resizeFont(fontSizeValue:Int, isBitmap:Bool) {
         var temp = sprite.font.clone();
         if (isBitmap) {
-            temp.resizeTo(-fontSizeValue);
+            temp.resizeTo(fontSizeValue);
         } else {
             if (temp == hxd.res.DefaultFont.get()) {
                 temp = hxd.res.DefaultFont.get().clone();
