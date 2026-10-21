@@ -40,7 +40,7 @@ class TileCache {
                 gradient.line(0, y, 1, y, alphaMask | col);
                 y++;
             }
-            tile = h2d.Tile.fromBitmap(gradient);
+            tile = tileFromBitmap(gradient);
         } else if (type == "horizontal") {
             var gradient = new hxd.BitmapData(size, 1);
             var x = 0;
@@ -48,9 +48,19 @@ class TileCache {
                 gradient.line(x, 0, x, 1, alphaMask | col);
                 x++;
             }
-            tile = h2d.Tile.fromBitmap(gradient);
+            tile = tileFromBitmap(gradient);
         }
         
         return tile;
+    }
+
+    /**
+        A tile over a new texture of `bmp`. The texture's `realloc` uploads `bmp` again, so the tile draws the same
+        after heaps disposes the texture (a replaced GL context, `Engine.onCreate(true)`). `bmp` stays referenced.
+    **/
+    public static function tileFromBitmap(bmp:hxd.BitmapData):Tile {
+        var tex = h3d.mat.Texture.fromBitmap(bmp);
+        tex.realloc = () -> tex.uploadBitmap(bmp);
+        return Tile.fromTexture(tex);
     }
 }

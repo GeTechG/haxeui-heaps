@@ -1,5 +1,6 @@
 package haxe.ui.backend;
 import haxe.ui.Toolkit;
+import haxe.ui.backend.heaps.TileCache;
 
 class ImageDisplayImpl extends ImageBase {
     public var sprite:h2d.Bitmap;
@@ -11,7 +12,7 @@ class ImageDisplayImpl extends ImageBase {
 
     private override function validateData() {
         if (_imageInfo != null) {
-            sprite.tile = h2d.Tile.fromBitmap(_imageInfo.data);
+            sprite.tile = TileCache.tileFromBitmap(_imageInfo.data);
         } else {
             sprite.tile.dispose();
             sprite.tile = null;

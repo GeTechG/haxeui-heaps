@@ -36,6 +36,7 @@ class ComponentGraphicsImpl extends ComponentGraphicsBase {
     
     private var _bitmap:Bitmap = null;
     private var _texture:Texture = null;
+    private var _pixels:Pixels = null; // the last upload, refilled by _texture.realloc
     public override function setPixels(pixels:Bytes) {
         if (_hasSize == false) {
             return super.setPixels(pixels);
@@ -47,8 +48,11 @@ class ComponentGraphicsImpl extends ComponentGraphicsBase {
         }
         
         var p = new Pixels(Std.int(_component.width), Std.int(_component.height), pixels, PixelFormat.RGBA);
+        _pixels = p;
         if (_texture == null) {
-            _texture = Texture.fromPixels(p);
+            var tex = Texture.fromPixels(p);
+            tex.realloc = () -> tex.uploadPixels(_pixels);
+            _texture = tex;
             _bitmap.tile = Tile.fromTexture(_texture);
         } else {
             if (_texture.width != _component.width || _texture.height != _component.height) {

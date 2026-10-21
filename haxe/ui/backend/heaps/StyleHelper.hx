@@ -133,7 +133,7 @@ class StyleHelper {
                 
                 var tile = TileCache.get(style.backgroundImage);
                 if (tile == null) {
-                    tile = h2d.Tile.fromBitmap(imageInfo.data);
+                    tile = TileCache.tileFromBitmap(imageInfo.data);
                     tile.getTexture().filter = Linear;
                     TileCache.set(style.backgroundImage, tile);
                 }
