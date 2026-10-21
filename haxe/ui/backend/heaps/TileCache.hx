@@ -50,7 +50,10 @@ class TileCache {
             }
             tile = tileFromBitmap(gradient);
         }
-        
+
+        if (tile != null) {
+            _cache.set(key, tile);
+        }
         return tile;
     }
 
