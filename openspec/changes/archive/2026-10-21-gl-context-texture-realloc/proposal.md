@@ -3,7 +3,7 @@ When the GL context is replaced (heaps' context-lost path, `Engine.onCreate(true
 
 ## What Changes
 - `TileCache.tileFromBitmap(bmp)`: a tile over a new texture of `bmp` whose `realloc` uploads `bmp` again. Gradients, images and background images are created through it.
-- `ComponentGraphicsImpl` keeps the last `Pixels` it uploaded; its texture's `realloc` uploads them again.
+- `ComponentGraphicsImpl` keeps a copy of the last pixels it uploaded; its texture's `realloc` uploads them again.
 
 ## Capabilities
 ### New Capabilities
