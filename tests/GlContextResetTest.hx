@@ -62,6 +62,7 @@ class GlContextResetTest extends hxd.App {
             var bytes = haxe.io.Bytes.alloc(SIZE * SIZE * 4);
             for (i in 0...SIZE * SIZE) bytes.setInt32(i * 4, 0xFFFFFF00); // RGBA bytes: cyan (magenta is what heaps draws for a lost texture)
             canvas.componentGraphics.setPixels(bytes);
+            bytes.fill(0, bytes.length, 0); // the caller reuses its buffer: the canvas keeps what it was given
         }, 0);
     }
 

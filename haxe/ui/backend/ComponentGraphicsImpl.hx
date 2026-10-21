@@ -36,7 +36,7 @@ class ComponentGraphicsImpl extends ComponentGraphicsBase {
     
     private var _bitmap:Bitmap = null;
     private var _texture:Texture = null;
-    private var _pixels:Pixels = null; // the last upload, refilled by _texture.realloc
+    private var _pixels:Pixels = null; // a copy of the last upload, refilled by _texture.realloc
     public override function setPixels(pixels:Bytes) {
         if (_hasSize == false) {
             return super.setPixels(pixels);
@@ -47,19 +47,24 @@ class ComponentGraphicsImpl extends ComponentGraphicsBase {
             _component.addChild(_bitmap);
         }
         
-        var p = new Pixels(Std.int(_component.width), Std.int(_component.height), pixels, PixelFormat.RGBA);
-        _pixels = p;
+        // copied: the caller may reuse its buffer, but realloc has to upload what was shown
+        var w = Std.int(_component.width);
+        var h = Std.int(_component.height);
+        if (_pixels == null || _pixels.width != w || _pixels.height != h) {
+            _pixels = new Pixels(w, h, Bytes.alloc(w * h * 4), PixelFormat.RGBA);
+        }
+        _pixels.bytes.blit(0, pixels, 0, pixels.length < w * h * 4 ? pixels.length : w * h * 4);
         if (_texture == null) {
-            var tex = Texture.fromPixels(p);
+            var tex = Texture.fromPixels(_pixels);
             tex.realloc = () -> tex.uploadPixels(_pixels);
             _texture = tex;
             _bitmap.tile = Tile.fromTexture(_texture);
         } else {
-            if (_texture.width != _component.width || _texture.height != _component.height) {
-                _texture.resize(Std.int(_component.width), Std.int(_component.height));
+            if (_texture.width != w || _texture.height != h) {
+                _texture.resize(w, h);
                 _bitmap.tile = Tile.fromTexture(_texture); // To ensure size is correct.
             }
-            _texture.uploadPixels(p);
+            _texture.uploadPixels(_pixels);
         }
     }
     
