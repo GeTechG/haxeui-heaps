@@ -77,6 +77,15 @@ class ComponentImpl extends ComponentBase {
     private override function handleVisibility(show:Bool) {
         super.visible = show;
     }
+
+    // A text input ignores the pointer while interactivity is disabled (TextInputImpl), but a selection drag it already
+    // started runs as a scene capture, past its handlers: end it here.
+    @:noCompletion
+    private override function handleDisabled(disable:Bool) {
+        if (disable && hasTextInput()) {
+            getTextInput().endPointerCapture();
+        }
+    }
     
     @:noCompletion
     private var _maskGraphics:Graphics = null;

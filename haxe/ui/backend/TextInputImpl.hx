@@ -23,7 +23,42 @@ class TextInputImpl extends TextDisplayImpl {
         textInput.onClick = function(e) {
             cast(parentComponent, InteractiveComponent).focus = true;
         }
+        ignorePointerWhileDisabled(@:privateAccess textInput.interactive);
         return textInput;
+    }
+
+    // disableInteractivity() only removes haxeui's own events; the h2d.Interactive of the h2d.TextInput gets the pointer
+    // straight from the scene, so a disabled field would still take the focus, set the caret and show the text cursor.
+    // While the component's interactivity is disabled its pointer handlers cancel the event instead: a cancelled push
+    // neither focuses nor arms a click, a cancelled move / check never puts the field under the mouse (no cursor), and
+    // the scene passes a cancelled event on to the interactives below. Keyboard events and focus set by code are
+    // untouched. The state is read on every event, so nothing has to follow disableInteractivity(false).
+    private function ignorePointerWhileDisabled(interactive:h2d.Interactive) {
+        function guard(handler:Event->Void):Event->Void {
+            return function(e:Event) {
+                if (parentComponent != null && @:privateAccess parentComponent._interactivityDisabled) {
+                    e.cancel = true;
+                    return;
+                }
+                handler(e);
+            }
+        }
+        interactive.onPush = guard(interactive.onPush);
+        interactive.onRelease = guard(interactive.onRelease);
+        interactive.onClick = guard(interactive.onClick);
+        interactive.onMove = guard(interactive.onMove);
+        interactive.onCheck = guard(interactive.onCheck);
+        interactive.onOver = guard(interactive.onOver);
+    }
+
+    // Ends the selection drag a push on this input started (h2d.TextInput.onPush runs it as a scene capture, which
+    // gets the pointer before any interactive does). The input holds a pressed button only between its push and the
+    // release, so the capture of the scene is then this input's.
+    public function endPointerCapture() {
+        var scene = textInput.getScene();
+        if (scene != null && @:privateAccess textInput.interactive.mouseDownButton != -1) {
+            scene.stopCapture();
+        }
     }
 
     // we're actually going to override this function so that it always returns
