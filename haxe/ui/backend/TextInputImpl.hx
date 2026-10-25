@@ -51,6 +51,16 @@ class TextInputImpl extends TextDisplayImpl {
         interactive.onOver = guard(interactive.onOver);
     }
 
+    // Ends the selection drag a push on this input started (h2d.TextInput.onPush runs it as a scene capture, which
+    // gets the pointer before any interactive does). The input holds a pressed button only between its push and the
+    // release, so the capture of the scene is then this input's.
+    public function endPointerCapture() {
+        var scene = textInput.getScene();
+        if (scene != null && @:privateAccess textInput.interactive.mouseDownButton != -1) {
+            scene.stopCapture();
+        }
+    }
+
     // we're actually going to override this function so that it always returns
     // h2d.Text.Align.Left - this is because heaps text input doesnt seem to like
     // center aligned text (or right aligned), for now will simply turn it off
