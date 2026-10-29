@@ -704,6 +704,26 @@ class ComponentImpl extends ComponentBase {
 
         x *= Toolkit.scaleX;
         y *= Toolkit.scaleY;
+
+        // screenX / screenY take the heaps parents of the root as translations only, so if they also rotate, scale
+        // or skew, map the point into the root's parent and back out through those translations alone
+        var host = findTransformedHost(true);
+        if (host != null) {
+            _hitPoint.x = x;
+            _hitPoint.y = y;
+            host.globalToLocal(_hitPoint);
+            var tx:Float = 0;
+            var ty:Float = 0;
+            var o = host;
+            while (o != null) {
+                tx += o.x;
+                ty += o.y;
+                o = o.parent;
+            }
+            x = _hitPoint.x + tx * Toolkit.scaleX;
+            y = _hitPoint.y + ty * Toolkit.scaleY;
+        }
+
         var b:Bool = false;
         var sx = screenX;
         var sy = screenY;
@@ -731,6 +751,41 @@ class ComponentImpl extends ComponentBase {
         return b;
     }
     
+    @:noCompletion
+    public override function hitTest(left:Null<Float>, top:Null<Float>, allowZeroSized:Bool = false):Bool {
+        // screenBounds ignores the heaps parents of the root, so map the point into the root's parent first
+        if (left != null && top != null) {
+            var host = findTransformedHost(false);
+            if (host != null) {
+                _hitPoint.x = left * Toolkit.scale;
+                _hitPoint.y = top * Toolkit.scale;
+                host.globalToLocal(_hitPoint);
+                left = _hitPoint.x / Toolkit.scale;
+                top = _hitPoint.y / Toolkit.scale;
+            }
+        }
+        return super.hitTest(left, top, allowZeroSized);
+    }
+
+    @:noCompletion
+    private static var _hitPoint = new Point();
+
+    // The heaps parent of the root component when its absolute matrix rotates, scales or skews (or, unless
+    // linearOnly, translates), null when it is the identity
+    @:noCompletion
+    @:access(h2d.Object)
+    private function findTransformedHost(linearOnly:Bool):Object {
+        var host = findRootComponent().parent;
+        if (host == null) {
+            return null;
+        }
+        host.syncPos();
+        if (host.matA == 1 && host.matB == 0 && host.matC == 0 && host.matD == 1 && (linearOnly || (host.absX == 0 && host.absY == 0))) {
+            return null;
+        }
+        return host;
+    }
+
     @:noCompletion
     private function isEventRelevant(children:Array<Component>, eventType:String):Bool {
         var relevant = false;
