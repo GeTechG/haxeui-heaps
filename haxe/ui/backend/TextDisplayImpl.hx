@@ -180,7 +180,8 @@ class TextDisplayImpl extends TextBase {
             case "left":    h2d.Text.Align.Left;
             case "right":   h2d.Text.Align.Right;
             case "center":  h2d.Text.Align.Center;
-            case _:         h2d.Text.Align.Left;    //TODO  - justify
+            case "justify": h2d.Text.Align.Justify;
+            case _:         h2d.Text.Align.Left;
         }
     }
     
