@@ -4,6 +4,7 @@ on: [push, repository_dispatch]
 
 jobs:
   build:
+    if: github.repository == 'haxeui/haxeui-heaps'
     runs-on: ${{ matrix.os }}
 
     strategy:
