@@ -1,7 +1,7 @@
 # text-font-size Specification
 
 ## Purpose
-TBD - created by archiving change bitmap-font-resize. Update Purpose after archive.
+A text display renders its font, bitmap or SDF, at the font size its style asks for, never at a mirrored or negative scale.
 
 ## Requirements
 
