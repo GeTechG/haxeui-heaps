@@ -6,7 +6,7 @@ The backend's pointer hit test matches where Heaps draws a component, whatever t
 ## Requirements
 
 ### Requirement: The pointer hit test follows the absolute transform of the root's host
-The host of a component is the `h2d.Object` its root component is added to. `inBounds` and `hitTest` SHALL map the point they get through the inverse of the host's absolute matrix and SHALL test it in the host's local space — `inBounds` against the component's rectangle and the clip rectangle of its nearest clipping ancestor, `hitTest` against the component's rectangle only, as haxeui-core's `hitTest` does — so that a point is over a component exactly where Heaps draws the component, whatever rotation, scale or skew the host and its ancestors have. When the host's absolute matrix is the identity, both SHALL give the same result as before this requirement. When it has no rotation, scale or skew, `inBounds` SHALL give the same result as before.
+The host of a component is the `h2d.Object` its root component is added to. `inBounds` and `hitTest` SHALL map the point they get through the inverse of the host's absolute matrix and SHALL test it in the host's local space, so that a point is over a component exactly where Heaps draws the component, whatever rotation, scale or skew the host and its ancestors have.
 
 #### Scenario: Component under a rotated and scaled host
 - **WHEN** a component's root is under an `h2d.Object` rotated by 90° and scaled by 2
@@ -19,3 +19,17 @@ The host of a component is the `h2d.Object` its root component is added to. `inB
 #### Scenario: Identity host
 - **WHEN** the host's absolute matrix is the identity
 - **THEN** `inBounds` and `hitTest` give the results they gave before
+
+### Requirement: Only `inBounds` honours the clip of the nearest clipping ancestor
+In the host's local space `inBounds` SHALL test the point against the component's rectangle and the clip rectangle of its nearest clipping ancestor; `hitTest` SHALL test it against the component's rectangle only, as haxeui-core's `hitTest` does.
+
+#### Scenario: Point of the content drawn outside the viewport
+- **WHEN** a scroll view's content is larger than its viewport and a point of the content is drawn outside the viewport
+- **THEN** `inBounds` of the content is false at that point and `hitTest` of the content is true
+
+### Requirement: Hosts without rotation, scale or skew keep the previous results
+When the host's absolute matrix is the identity, `inBounds` and `hitTest` SHALL give the same results as before the host's transform was taken into account; when the matrix has no rotation, scale or skew, `inBounds` SHALL.
+
+#### Scenario: Translated host
+- **WHEN** a component's root is under an `h2d.Object` that is only translated
+- **THEN** `inBounds` gives, at every point, the result it gave before the host's transform was taken into account
