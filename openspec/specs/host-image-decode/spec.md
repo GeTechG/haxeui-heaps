@@ -1,7 +1,7 @@
 # host-image-decode Specification
 
 ## Purpose
-TBD - created by archiving change host-image-decode. Update Purpose after archive.
+Let a host that decodes images and supplies fonts itself (for example with the browser) build the backend without linking any Haxe image decoder, under `-D haxeui_heaps_no_image_decode`.
 
 ## Requirements
 

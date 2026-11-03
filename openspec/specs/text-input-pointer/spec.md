@@ -6,7 +6,7 @@ A text input the backend creates does not take the pointer while the interactivi
 ## Requirements
 
 ### Requirement: A text input ignores the pointer while its component's interactivity is disabled
-While the component that owns a text input has its interactivity disabled (`disableInteractivity(true)`, which `disabled = true` also does), the backend's `h2d.TextInput` SHALL NOT handle pointer events: a click SHALL NOT focus the component nor the heaps scene focus, SHALL NOT set the caret or a selection, hovering SHALL NOT show the text cursor, and the event SHALL go on to the interactives under the field. Keyboard events and focus set by code SHALL work as for an enabled field. After `disableInteractivity(false)` the pointer SHALL work as before.
+While the component that owns a text input has its interactivity disabled (`disableInteractivity(true)`, which `disabled = true` also does), the backend's `h2d.TextInput` SHALL NOT handle pointer events: a click SHALL NOT focus the component nor the heaps scene focus, SHALL NOT set the caret or a selection, hovering SHALL NOT show the text cursor, and the event SHALL go on to the interactives under the field.
 
 #### Scenario: Click on a field with interactivity disabled
 - **WHEN** the interactivity of a `TextField` is disabled and the user clicks on its text
@@ -23,3 +23,17 @@ While the component that owns a text input has its interactivity disabled (`disa
 #### Scenario: Focus by code
 - **WHEN** the interactivity of a `TextField` is disabled and code sets `focus = true`
 - **THEN** the field takes the focus and receives the keyboard
+
+### Requirement: Keyboard and focus by code ignore disabled interactivity
+While the component that owns a text input has its interactivity disabled, keyboard events and focus set by code SHALL work as for an enabled field.
+
+#### Scenario: Typing into a field focused by code
+- **WHEN** the interactivity of a `TextField` is disabled, code sets `focus = true` and the user types `a`
+- **THEN** the field's text ends with `a`
+
+### Requirement: The pointer works again once interactivity is enabled
+After `disableInteractivity(false)` the text input SHALL handle the pointer as it did before its interactivity was disabled.
+
+#### Scenario: Hover after interactivity is enabled again
+- **WHEN** the interactivity of a `TextField` is disabled, then enabled again, and the pointer moves over its text
+- **THEN** the text cursor is shown as for a field whose interactivity was never disabled

@@ -4,3 +4,27 @@ context: |
   haxeui-heaps: the Heaps backend of HaxeUI, maintained as an independent fork. Its own rules live
   in AGENTS.md; its own specs live in openspec/specs. Consumers pin it by commit.
   Every commit is either code or infrastructure, never both (see openspec/specs/commit-kinds).
+
+rules:
+  specs:
+    - "A requirement's text (between `### Requirement:` and its first scenario) is at most 500 characters and states one behavior with SHALL or MUST; details and edge cases go into its scenarios."
+    - "Scenarios use exactly `#### Scenario:` with a **WHEN** and a **THEN** step; every requirement has at least one."
+    - "A spec states only behavior observable from outside the library (API, rendering, input, build output), not internal classes or steps."
+    - "A MODIFIED requirement copies the whole requirement, header and every scenario, then edits it."
+    - "A REMOVED requirement carries a **Reason** and a **Migration**."
+    - "A new capability's delta starts with a `## Purpose` of at least 50 characters that says what the capability is for; never `TBD`."
+  tasks:
+    - "Each task group carries its own tests and documentation tasks; no trailing catch-all test or docs group."
+    - "Each task names how it is verified (a command, a test, an observable result)."
+    - "Steps after the tasks are done (hand-off, a bump in a consumer) go under `## Workflow follow-up` as plain bullets, not checkboxes."
+    - "Steps only a human can do stay checkboxes, written `- [ ] N.M [human] …`; agents never tick them."
+
+operations:
+  apply:
+    guidance:
+      - "Follow AGENTS.md, Workflow step 2 (Implement) and the Commits section: code and infrastructure never share a commit."
+      - "Before finishing, run the checks listed in AGENTS.md, Checks."
+  archive:
+    guidance:
+      - "Follow AGENTS.md, Workflow step 3 (Test): the archive is the last commit of the branch, an infrastructure commit."
+      - "Leave the `[human]` tasks unticked when archiving; they are handled after the archive, in AGENTS.md, Workflow step 4."

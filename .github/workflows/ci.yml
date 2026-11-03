@@ -32,3 +32,14 @@ jobs:
       # Installs the pinned compiler and libraries, then compiles every module with them.
       - name: Set up the toolchain and compile the backend
         run: tools/setup.sh
+
+  openspec:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      # Runs the OpenSpec CLI pinned in openspec/cli.pin; see openspec/check.sh for the checks.
+      - name: Validate OpenSpec artifacts
+        run: bash openspec/check.sh
